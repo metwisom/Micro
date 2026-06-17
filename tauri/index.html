@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Micro</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <section class="card">
+      <div class="field">
+        <span data-i18n="source_label">Phone source</span>
+        <div id="sources" class="sources"></div>
+        <div id="vu" class="vu hidden"><div id="vubar"></div></div>
+        <div id="codePrompt" class="code-prompt hidden">
+          <span data-i18n="enter_code">Enter the code shown on the phone</span>
+          <div class="manual">
+            <input id="code" type="text" inputmode="numeric" maxlength="4" placeholder="1234" autocomplete="off" />
+            <button id="codeOk" class="primary small" data-i18n="ok">OK</button>
+          </div>
+        </div>
+        <div id="manual" class="manual hidden">
+          <input id="host" type="text" placeholder="192.168.1.139" autocomplete="off" />
+          <button id="manualConnect" class="primary small" data-i18n="connect">Connect</button>
+        </div>
+      </div>
+    </section>
+
+    <details class="settings">
+      <summary data-i18n="settings">Settings</summary>
+
+      <section class="card">
+        <label class="field narrow">
+          <span data-i18n="language">Language</span>
+          <select id="lang">
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="card">
+        <label class="field">
+          <span data-i18n="output">Audio output (device)</span>
+          <div class="row">
+            <select id="device"></select>
+            <button id="refresh" class="ghost" data-i18n-title="refresh" title="Refresh list">⟳</button>
+          </div>
+        </label>
+      </section>
+
+      <section class="card">
+        <label class="check">
+          <input id="denoise" type="checkbox" checked />
+          <span data-i18n="denoise">Noise suppression (RNNoise)</span>
+        </label>
+        <label class="field">
+          <span><span data-i18n="volume">Volume</span>: <b id="gainval">150%</b>
+            <small data-i18n="volume_hint">(signal boost)</small></span>
+          <input id="gain" type="range" min="0" max="4" step="0.1" value="1.5" />
+        </label>
+        <label class="field">
+          <span><span data-i18n="vad">VAD gate</span>: <b id="vadval">0.00</b>
+            <small data-i18n="vad_hint">(0 = off, 0.6–0.9 = hard)</small></span>
+          <input id="vad" type="range" min="0" max="1" step="0.05" value="0" />
+        </label>
+        <label class="field narrow">
+          <span data-i18n="buffer">Buffer (10 ms frames, lower = less ping)</span>
+          <input id="buffer" type="number" value="3" min="1" max="40" />
+        </label>
+        <label class="check">
+          <input id="autostart" type="checkbox" />
+          <span data-i18n="autostart">Launch at login</span>
+        </label>
+      </section>
+
+      <footer>
+        <small data-i18n="footer">Open Micro on the phone and tap Start — it appears as a button
+        above. Output auto-selects VB-Cable (CABLE Input).</small>
+      </footer>
+
+      <section class="card">
+        <button id="reset" class="danger-btn" data-i18n="reset">Reset app</button>
+      </section>
+    </details>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<resources>
+    <string name="address_fmt">Адрес: %1$s:%2$d</string>
+    <string name="start">Запустить</string>
+    <string name="stop">Остановить</string>
+    <string name="stopped">Остановлено</string>
+    <string name="waiting">Ожидание подключения…</string>
+    <string name="connected">Подключено — идёт передача</string>
+    <string name="connected_fmt">%1$s подключено</string>
+    <string name="device_generic">Устройство</string>
+    <string name="need_mic_permission">Нужно разрешение на микрофон</string>
+    <string name="source_label">Источник звука (тип)</string>
+    <string name="mic_label">Микрофон (устройство)</string>
+    <string name="device_auto">Авто (по умолчанию)</string>
+    <string name="new_device">Новое устройство</string>
+    <string name="allow_device_fmt">%1$s\n%2$s\n\nРазрешить использовать микрофон?</string>
+    <string name="code_prompt_fmt">%1$s\n%2$s\n\nКод для подключения:\n%3$s</string>
+    <string name="always_allow">Разрешать этому устройству всегда</string>
+    <string name="allow">Разрешить</string>
+    <string name="deny">Отклонить</string>
+    <string name="settings">Настройки</string>
+    <string name="trusted_devices">Доверенные устройства</string>
+    <string name="trusted_empty">Нет доверенных устройств</string>
+    <string name="delete">Удалить</string>
+    <string name="btn_mute">ВЫКЛ. МИКР</string>
+    <string name="btn_unmute">ВКЛ. МИКР</string>
+    <string name="notif_channel">Микрофон по Wi-Fi</string>
+    <string name="notif_text">Передача микрофона по Wi-Fi</string>
+    <string name="dev_builtin">встроенный</string>
+    <string name="dev_bt">Bluetooth</string>
+    <string name="dev_wired">гарнитура</string>
+    <string name="dev_usb">USB</string>
+    <string name="dev_speaker">динамик</string>
+    <string name="dev_other">тип %1$d</string>
+    <string name="language">Язык</string>
+    <string name="lang_system">Системный</string>
+</resources>

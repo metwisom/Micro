@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Micro</string>
+    <string name="address_fmt">Address: %1$s:%2$d</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="stopped">Stopped</string>
+    <string name="waiting">Waiting for connection…</string>
+    <string name="connected">Connected — streaming</string>
+    <string name="connected_fmt">%1$s connected</string>
+    <string name="device_generic">Device</string>
+    <string name="need_mic_permission">Microphone permission required</string>
+    <string name="source_label">Audio source (type)</string>
+    <string name="mic_label">Microphone (device)</string>
+    <string name="device_auto">Auto (default)</string>
+    <string name="new_device">New device</string>
+    <string name="allow_device_fmt">%1$s\n%2$s\n\nAllow microphone access?</string>
+    <string name="code_prompt_fmt">%1$s\n%2$s\n\nConnection code:\n%3$s</string>
+    <string name="always_allow">Always allow this device</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
+    <string name="settings">Settings</string>
+    <string name="trusted_devices">Trusted devices</string>
+    <string name="trusted_empty">No trusted devices</string>
+    <string name="delete">Delete</string>
+    <string name="btn_mute">MUTE</string>
+    <string name="btn_unmute">UNMUTE</string>
+    <string name="notif_channel">Microphone over Wi-Fi</string>
+    <string name="notif_text">Streaming microphone over Wi-Fi</string>
+    <string name="dev_builtin">built-in</string>
+    <string name="dev_bt">Bluetooth</string>
+    <string name="dev_wired">headset</string>
+    <string name="dev_usb">USB</string>
+    <string name="dev_speaker">speaker</string>
+    <string name="dev_other">type %1$d</string>
+    <string name="language">Language</string>
+    <string name="lang_system">System</string>
+</resources>

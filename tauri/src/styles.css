@@ -1,0 +1,353 @@
+/* Windows 11 / Fluent Design — follows the system light/dark scheme + accent color. */
+:root {
+  /* dark (default) */
+  --accent: #4cc2ff;          /* overridden at runtime by the system accent */
+  --accent-hover: #5cc8ff;
+  --accent-press: #42a1d6;
+  --accent-fg: #00243a;       /* text on accent fill */
+  --danger: #c42b1c;
+  --danger-hover: #d6453a;
+
+  --text: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.61);
+  --text-3: rgba(255, 255, 255, 0.40);
+
+  --layer-strong: rgba(255, 255, 255, 0.07);
+  --control: rgba(255, 255, 255, 0.06);
+  --control-hover: rgba(255, 255, 255, 0.09);
+  --stroke: rgba(255, 255, 255, 0.09);
+  --stroke-strong: rgba(255, 255, 255, 0.16);
+  --ok: #6ccb5a;
+  --thumb-ring: #2b2e33;
+  --field-bg: #2b2b2b;        /* opaque — for <select>/<option> popups */
+  --bg: #202020;
+  --bg-a: #2a2d33;
+  --bg-b: #26303a;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --accent: #005fb8;
+    --accent-hover: #1a6fc0;
+    --accent-press: #0e4f9c;
+    --accent-fg: #ffffff;
+    --danger: #c42b1c;
+    --danger-hover: #b22a1c;
+
+    --text: #1b1b1b;
+    --text-2: rgba(0, 0, 0, 0.62);
+    --text-3: rgba(0, 0, 0, 0.42);
+
+    --layer-strong: rgba(0, 0, 0, 0.05);
+    --control: rgba(0, 0, 0, 0.035);
+    --control-hover: rgba(0, 0, 0, 0.06);
+    --stroke: rgba(0, 0, 0, 0.10);
+    --stroke-strong: rgba(0, 0, 0, 0.20);
+    --ok: #0f7b0f;
+    --thumb-ring: #f3f3f3;
+    --field-bg: #ffffff;
+    --bg: #f3f3f3;
+    --bg-a: #eaeef3;
+    --bg-b: #e6eef5;
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+html { background: var(--bg); }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  /* Mica-ish layered backdrop, pinned to the viewport so scrolling stays seamless */
+  background:
+    radial-gradient(120% 90% at 30% 0%, var(--bg-a) 0%, transparent 60%),
+    radial-gradient(120% 90% at 90% 10%, var(--bg-b) 0%, transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 14px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Minimal: no card chrome — sections separated by a horizontal rule. */
+.card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 2px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.card + .card { border-top: 1px solid var(--stroke); }
+
+/* Settings spoiler */
+.settings { border-top: 1px solid var(--stroke); }
+.settings > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.settings > summary::-webkit-details-marker { display: none; }
+.settings > summary::before {
+  content: "›";
+  color: var(--text-2);
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.15s;
+}
+.settings[open] > summary::before { transform: rotate(90deg); }
+.settings > summary:hover { color: var(--accent); }
+.settings > .card:first-of-type { border-top: 1px solid var(--stroke); }
+
+.field { display: flex; flex-direction: column; gap: 8px; flex: 1 1 100%; min-width: 0; }
+.field.narrow { flex: 0 0 170px; }
+.field > span { font-size: 13px; color: var(--text-2); }
+.field small { color: var(--text-3); font-weight: 400; }
+
+/* Text inputs & selects (Fluent: subtle fill + bottom accent on focus) */
+input[type="text"], input[type="number"], select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--control);
+  border: 1px solid var(--stroke);
+  border-bottom-color: var(--stroke-strong);
+  border-radius: 5px;
+  color: var(--text);
+  padding: 8px 11px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+input::placeholder { color: var(--text-3); }
+input[type="text"]:hover, input[type="number"]:hover, select:hover { background: var(--control-hover); }
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 7px;
+}
+
+/* <select> popup is rendered natively — give it an opaque background + readable text. */
+select { background-color: var(--field-bg); color: var(--text); }
+select:hover { background-color: var(--field-bg); }
+select option { background-color: var(--field-bg); color: var(--text); }
+
+.row { display: flex; gap: 8px; min-width: 0; }
+.row select { flex: 1 1 auto; min-width: 0; text-overflow: ellipsis; }
+
+/* Buttons */
+button { font-family: inherit; cursor: pointer; border: none; border-radius: 5px; }
+
+button.ghost {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  background: var(--control);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+  transition: background 0.15s;
+}
+button.ghost:hover { background: var(--control-hover); }
+
+button.primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: background 0.1s;
+}
+button.primary:hover { background: var(--accent-hover); }
+button.primary:active { background: var(--accent-press); }
+button.primary.small { padding: 9px 18px; font-size: 14px; }
+
+/* Fluent toggle switch (the denoise checkbox) */
+.check { display: flex; align-items: center; gap: 12px; font-size: 14px; flex: 1 1 100%; }
+.check input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 40px;
+  height: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--text-2);
+  background: transparent;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: background 0.15s, border-color 0.15s;
+}
+.check input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text);
+  left: 4px; top: 50%;
+  transform: translateY(-50%);
+  transition: left 0.15s, background 0.15s;
+}
+.check input[type="checkbox"]:hover { background: rgba(255, 255, 255, 0.06); }
+.check input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+.check input[type="checkbox"]:checked::before { left: 23px; background: var(--accent-fg); }
+
+/* Fluent sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 5px solid var(--thumb-ring);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+input[type="range"]:hover::-webkit-slider-thumb { background: var(--accent-hover); }
+
+/* Source list */
+.sources { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+
+.searching { color: var(--text-2); font-size: 14px; padding: 10px 2px; text-align: center; }
+
+.source-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text);
+  padding: 10px 8px;
+  font-size: 14px;
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s;
+}
+.source-btn:hover:not(:disabled) { background: var(--control); }
+.source-btn b { font-size: 15px; font-weight: 600; }
+.source-btn span { color: var(--text-2); font-size: 12px; }
+.source-btn.active {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+  background: transparent;
+  border-left: 2px solid var(--accent);
+  border-radius: 0;
+  padding-left: 12px;
+}
+.source-btn.manual-btn { align-items: center; color: var(--text-2); }
+.source-btn:disabled { opacity: 0.45; cursor: default; }
+
+.src-info { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.src-sub { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.src-sub > span:first-child { color: var(--text-2); font-size: 12px; }
+.btn-status { color: var(--text-2); font-size: 12px; }
+.btn-status.ok { color: var(--ok); }
+.btn-status.err { color: var(--danger-hover); }
+
+.stop-btn {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 0 0 auto;
+  transition: background 0.1s;
+}
+.stop-btn:hover { background: var(--danger-hover); }
+
+.danger-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger-hover);
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+.danger-btn:hover { background: rgba(196, 43, 28, 0.12); }
+
+.manual { display: flex; gap: 8px; margin-top: 8px; }
+.manual input { flex: 1; }
+
+.hidden { display: none !important; }
+
+footer {
+  color: var(--text-3);
+  line-height: 1.5;
+  font-size: 12px;
+  border-top: 1px solid var(--stroke);
+  padding-top: 14px;
+  margin-top: 6px;
+}
+
+/* VU meter + mute button (Tauri client) */
+.vu { height: 6px; background: var(--control); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.vu.hidden { display: none; }
+#vubar { height: 100%; width: 0%; background: var(--accent); transition: width 0.05s linear; }
+
+.active-btns { display: flex; gap: 8px; flex: 0 0 auto; }
+.mute-btn {
+  background: var(--control);
+  color: var(--text);
+  border: 1px solid var(--stroke);
+  border-radius: 5px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mute-btn:hover { background: var(--control-hover); }
+.mute-btn.on { background: var(--accent); color: var(--accent-fg); border-color: transparent; }
+/* Monitor/test active = green (good), not the accent (reads as alert). */
+.test-btn.on { background: #2e9e5b; color: #fff; border-color: transparent; }
+.test-btn.on:hover { background: #277f4a; }
+
+/* Icon-only control buttons (mute / test / disconnect) */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  cursor: pointer;
+}
+.icon-btn svg { display: block; }
+.stop-btn.icon-btn { border-radius: 5px; }
+
+.code-prompt { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.code-prompt > span { font-size: 13px; color: var(--text-2); }
+#code { letter-spacing: 4px; text-align: center; font-size: 18px; }
