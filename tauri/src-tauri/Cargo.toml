@@ -23,7 +23,7 @@ log = "0.4"
 serde = { version = "1", features = ["derive"] }
 audiopus = "0.2"
 cpal = "0.15"
-ringbuf = "0.4"
+ringbuf = "0.6"
 uuid = { version = "1", features = ["v4"] }
 dirs = "6"
 if-addrs = "0.15"
