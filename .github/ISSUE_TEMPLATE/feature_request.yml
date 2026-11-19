@@ -1,0 +1,53 @@
+name: Feature request
+description: Suggest a concrete change or a new capability.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Open-ended "what if Micro could..." conversations fit better in a blank
+        issue. Use this form when you can name the problem and a change that
+        would solve it.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: >-
+        What are you trying to do, and what stops you today? Describe the
+        situation, not the feature — a use case is much easier to design for
+        than a solution handed over ready-made.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: >-
+        What should Micro do instead? Say which side it lives on — the Android
+        server, the desktop client, or both.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: >-
+        Workarounds you already tried, other designs you rejected, or existing
+        settings that almost do the job.
+
+  - type: checkboxes
+    id: protocol-cost
+    attributes:
+      label: Protocol cost
+      options:
+        - label: >-
+            I understand that the wire protocol is implemented twice — Kotlin on
+            Android and Rust on the desktop — and specified separately in
+            PROTOCOL.md, so anything that changes the bytes on the wire means
+            three coordinated edits and breaks every peer that has not been
+            updated. Features that fit inside the existing protocol are far
+            more likely to happen.
+          required: true

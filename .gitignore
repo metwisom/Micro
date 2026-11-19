@@ -28,6 +28,16 @@ local.properties
 .cxx/
 .externalNativeBuild/
 captures/
+# Locally-assembled release APK + baseline profiles (build output). Keep the comment on its own
+# line: git only treats '#' as a comment at the START of a line, so a trailing one would become
+# part of the pattern and silently match nothing.
+android/app/release/
+*.apk
+*.aab
+# Signing material must never be committed.
+keystore.properties
+*.jks
+*.keystore
 
 # --- Misc -------------------------------------------------------------------
 *.local

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="status_ok">#FF3ECF8E</color>
+    <color name="status_warn">#FFE0A030</color>
+    <color name="status_err">#FFE5533F</color>
+    <color name="on_status">#FFFFFFFF</color>
+</resources>

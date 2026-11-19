@@ -1,6 +1,6 @@
 [package]
 name = "micro-client"
-version = "1.0.0"
+version = "2.0.0"
 edition = "2021"
 rust-version = "1.77"
 
@@ -10,6 +10,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
+cc = "1"
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon"] }
@@ -20,22 +21,31 @@ tauri-plugin-notification = "2"
 tauri-plugin-global-shortcut = "2"
 log = "0.4"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
 audiopus = "0.2"
-nnnoiseless = { version = "0.5", default-features = false }
+cpal = "0.15"
+ringbuf = "0.4"
 uuid = { version = "1", features = ["v4"] }
-dirs = "5"
-if-addrs = "0.13"
+dirs = "6"
+if-addrs = "0.15"
+# DSCP marking on the UDP socket (std has no setsockopt for ToS).
+socket2 = "0.6"
+# Machine name for the phone's device list; works in GUI sessions where $HOSTNAME is not exported.
+gethostname = "1"
 x25519-dalek = { version = "2", features = ["static_secrets"] }
 chacha20poly1305 = "0.10"
 hkdf = "0.12"
 sha2 = "0.10"
 base64 = "0.22"
-getrandom = "0.2"
+zeroize = "1"
+getrandom = "0.3"
+# OS secret store for the long-term identity: Windows Credential Manager, macOS Keychain,
+# Linux Secret Service. Falls back to an owner-only file when no store is available (see store.rs).
+keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
 png = "0.17"
+mimalloc = { version = "0.1", default-features = false }
 
 [target.'cfg(windows)'.dependencies]
-winreg = "0.52"
+winreg = "0.56"
 
 [profile.release]
 opt-level = 3

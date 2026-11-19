@@ -75,13 +75,23 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <ru.metwisom.micro.VuRing
+            android:id="@+id/vuRing"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:focusable="false"
+            android:visibility="gone"
+            tools:ignore="MissingDefaultResource" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/mute"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:text="@string/btn_mute"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/on_status"
             android:textSize="18sp"
             android:textStyle="bold"
             android:visibility="gone"
@@ -90,7 +100,7 @@
             app:icon="@drawable/ic_mic"
             app:iconGravity="textTop"
             app:iconSize="52dp"
-            app:iconTint="#FFFFFF"
+            app:iconTint="@color/on_status"
             app:iconPadding="8dp"
             app:cornerRadius="100dp"
             tools:ignore="MissingDefaultResource" />
@@ -103,8 +113,8 @@
         android:layout_height="58dp"
         android:layout_margin="16dp"
         android:text="@string/stop"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/on_status"
         android:textSize="16sp"
-        android:backgroundTint="#C42B1C" />
+        android:backgroundTint="@color/status_err" />
 
 </LinearLayout>

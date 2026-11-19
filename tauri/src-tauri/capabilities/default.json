@@ -5,11 +5,11 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "log:default",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
     "notification:default",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
-    "global-shortcut:allow-is-registered",
     "autostart:allow-enable",
     "autostart:allow-disable",
     "autostart:allow-is-enabled"

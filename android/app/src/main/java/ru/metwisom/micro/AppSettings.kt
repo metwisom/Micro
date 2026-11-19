@@ -4,11 +4,13 @@ import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 
-/** Persisted user settings (currently just the capture audio source). */
+/** Persisted user settings: capture audio source, pinned input device, FEC and low-latency mode. */
 object AppSettings {
     private const val PREFS = "micro_settings"
     private const val KEY_SOURCE = "audio_source"
     private const val KEY_INPUT_DEVICE = "input_device_id"
+    private const val KEY_FEC = "fec_enabled"
+    private const val KEY_LOWLAT = "low_latency"
 
     const val DEVICE_AUTO = -1   // let the system pick the input device
 
@@ -42,5 +44,15 @@ object AppSettings {
 
     fun setInputDeviceId(ctx: Context, id: Int) =
         prefs(ctx).edit().putInt(KEY_INPUT_DEVICE, id).apply()
+
+    fun fecEnabled(ctx: Context): Boolean = prefs(ctx).getBoolean(KEY_FEC, true)
+
+    fun setFecEnabled(ctx: Context, on: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_FEC, on).apply()
+
+    fun lowLatency(ctx: Context): Boolean = prefs(ctx).getBoolean(KEY_LOWLAT, false)
+
+    fun setLowLatency(ctx: Context, on: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_LOWLAT, on).apply()
 }
 

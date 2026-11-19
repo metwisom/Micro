@@ -1,0 +1,170 @@
+name: Bug report
+description: The phone is not found, pairing fails, audio misbehaves, or a build breaks.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Micro is two programs talking over UDP on your local network, so a
+        report without the environment below is usually impossible to act on.
+        The network section in particular decides most discovery and pairing
+        bugs.
+
+  - type: checkboxes
+    id: version-check
+    attributes:
+      label: Version
+      options:
+        - label: >-
+            I am on the latest `master`, or on the most recent release, and the
+            problem still happens there.
+          required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: >-
+        What you did, step by step, and what Micro did instead. Quote any error
+        text the phone or the client showed, exactly.
+      placeholder: |
+        1. Opened Micro on the phone, the server started.
+        2. Started the desktop client; the phone never appeared in the list.
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Where the problem shows up. Pick more than one only if it genuinely spans them.
+      multiple: true
+      options:
+        - Android app (the server)
+        - Desktop client (the Tauri app)
+        - Pairing and discovery
+        - Audio quality (dropouts, latency, noise, distortion)
+        - Build and toolchain
+    validations:
+      required: true
+
+  - type: dropdown
+    id: desktop-os
+    attributes:
+      label: Desktop OS
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Not applicable (phone-only problem)
+    validations:
+      required: true
+
+  - type: input
+    id: desktop-os-version
+    attributes:
+      label: Desktop OS version
+      description: >-
+        On Linux also give the distribution and whether you run PulseAudio or
+        PipeWire; on Windows and macOS say whether VB-CABLE / BlackHole is
+        installed.
+      placeholder: Windows 11 24H2, VB-CABLE installed — or — Ubuntu 24.04, PipeWire
+
+  - type: input
+    id: android
+    attributes:
+      label: Android version and phone model
+      placeholder: Android 14, Pixel 6a
+    validations:
+      required: true
+
+  - type: dropdown
+    id: obtained
+    attributes:
+      label: How you obtained the apps
+      description: Tick the desktop build and the Android build you are running.
+      multiple: true
+      options:
+        - "Desktop: scripts/build-windows.ps1"
+        - "Desktop: scripts/build-linux.sh"
+        - "Desktop: scripts/build-macos.sh"
+        - "Desktop: npm run tauri dev"
+        - "Desktop: npm run tauri build, by hand"
+        - "Desktop: a published release binary"
+        - "Android: ./gradlew assembleDebug"
+        - "Android: ./gradlew assembleRelease"
+        - "Android: a published release APK"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: network
+    attributes:
+      label: Network
+      description: >-
+        Audio and control traffic are UDP on port 50005, and discovery is a
+        LAN broadcast. Tick everything that applies — including the things you
+        are unsure about.
+      options:
+        - label: Phone and PC are on the same Wi-Fi network and the same subnet
+        - label: >-
+            Phone and PC are on different networks or subnets (guest network,
+            split 2.4/5 GHz SSIDs, wired PC and wireless phone on separate
+            VLANs)
+        - label: The phone is USB-tethered, or the PC is on the phone's hotspot
+        - label: A VPN is active on the PC
+        - label: A VPN is active on the phone
+        - label: >-
+            The PC has several active interfaces (Ethernet plus Wi-Fi, or
+            virtual adapters from Docker, WSL or VirtualBox)
+        - label: >-
+            The access point may isolate clients from each other (guest mode,
+            AP/client isolation)
+        - label: A firewall on the PC may be blocking UDP 50005
+        - label: The client found the phone on its own (auto-discovery)
+        - label: I typed the phone's IP address in manually
+        - label: The network changed while the session was running (Wi-Fi blip, new IP, interface switch)
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: |
+        **Desktop** — the client logs through `tauri-plugin-log`, which writes to
+        stdout and to a rotating `Micro.log`:
+
+        | OS | Path |
+        |----|------|
+        | Windows | `%LOCALAPPDATA%\ru.metwisom.micro\logs\Micro.log` |
+        | macOS | `~/Library/Logs/ru.metwisom.micro/Micro.log` |
+        | Linux | `~/.local/share/ru.metwisom.micro/logs/Micro.log` |
+
+        Running `npm run tauri dev` from `tauri/` prints the same lines in the
+        terminal.
+
+        **Android** — with the phone attached over USB and debugging enabled:
+
+        ```
+        adb logcat -s MicService
+        ```
+
+        Paste the lines from just before the failure. Logs contain local IP
+        addresses and device names; redact anything you would rather not
+        publish.
+      render: text
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: >-
+        Screenshots, how often it reproduces, whether it ever worked, other
+        audio software holding the microphone or the virtual device.

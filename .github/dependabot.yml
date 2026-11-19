@@ -1,0 +1,53 @@
+version: 2
+
+# Weekly dependency updates, one ecosystem per component. Minor and patch bumps are grouped
+# into a single pull request per ecosystem so routine churn stays reviewable; major bumps
+# arrive as their own pull requests, because they need reading.
+updates:
+  # Desktop client, Rust side.
+  - package-ecosystem: cargo
+    directory: /tauri/src-tauri
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      cargo-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Desktop client, frontend side.
+  - package-ecosystem: npm
+    directory: /tauri
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Android server (Gradle/AGP and the Kotlin dependencies).
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      gradle-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # The CI workflow's own actions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        update-types:
+          - minor
+          - patch

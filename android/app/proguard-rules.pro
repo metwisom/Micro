@@ -1,21 +1,16 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep readable crash stack traces from release builds.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# JNI: the C side binds methods by their exact Java names (Java_ru_metwisom_micro_OpusNative_*),
+# so the class and its native methods must not be renamed or stripped.
+-keepclasseswithmembernames,includedescriptorclasses class * {
+    native <methods>;
+}
+-keep class ru.metwisom.micro.OpusNative { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# BouncyCastle: only the lightweight API is referenced, directly and without reflection
+# (CryptoSession / Identity), so R8 keeps exactly the engines we call and drops the JCE provider,
+# TLS, PQC, OpenPGP and ASN.1 subsystems that make up the bulk of the jar. Silence its optional deps.
+-dontwarn org.bouncycastle.**
+-dontwarn javax.naming.**

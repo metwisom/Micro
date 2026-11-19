@@ -1,0 +1,70 @@
+Micro
+Copyright (c) 2026 metwisom
+
+This product includes third-party software. Micro itself is distributed under the MIT
+License (see LICENSE); the components below keep their own licences and copyright.
+
+--------------------------------------------------------------------------------
+RNNoise — vendored source
+--------------------------------------------------------------------------------
+Location:  tauri/src-tauri/rnnoise/
+Licence:   BSD 3-Clause — full text in tauri/src-tauri/rnnoise/COPYING
+Upstream:  https://gitlab.xiph.org/xiph/rnnoise
+
+    Copyright (c) 2017, Mozilla
+    Copyright (c) 2007-2017, Jean-Marc Valin
+    Copyright (c) 2005-2017, Xiph.Org Foundation
+    Copyright (c) 2003-2004, Mark Borgerding
+
+The C sources are compiled into the desktop client by tauri/src-tauri/build.rs and provide the
+noise suppression applied to incoming audio. Some functions are renamed at compile time
+(rnn_* prefix) so they do not collide with the identically named symbols in libopus.
+
+tauri/src-tauri/rnnoise/stb_fft.h is a single-file FFT implementation carrying its own author
+credit (ZhiHan Gao) and licence header; see the file itself.
+
+--------------------------------------------------------------------------------
+Opus — not vendored, fetched at build time
+--------------------------------------------------------------------------------
+Licence:   BSD 3-Clause
+Upstream:  https://opus-codec.org/  —  https://github.com/xiph/opus
+
+    Copyright (c) 2001-2023 Xiph.Org, Skype Limited, Octasic, Jean-Marc Valin,
+    Timothy B. Terriberry, CSIRO, Gregory Maxwell, Mark Borgerding,
+    Erik de Castro Lopo, and others.
+
+Android builds a static libopus from the official release tarball, downloaded by CMake
+FetchContent and pinned by SHA-256 (see android/app/src/main/cpp/CMakeLists.txt). The desktop
+client links libopus through the `audiopus` crate.
+
+--------------------------------------------------------------------------------
+Compiled into the Android APK
+--------------------------------------------------------------------------------
+The released APK is a binary that statically contains the libraries below. R8 minification strips
+the packages' own metadata, so their attribution is reproduced here instead — Apache-2.0 section
+4(d) asks for exactly that in a redistribution.
+
+    Bouncy Castle (org.bouncycastle:bcprov-jdk18on)
+    Licence: MIT-style (the Bouncy Castle Licence) - https://www.bouncycastle.org/licence.html
+    Copyright (c) 2000-2024 The Legion of the Bouncy Castle Inc.
+
+    AndroidX Core KTX (androidx.core:core-ktx)
+    AndroidX AppCompat (androidx.appcompat:appcompat)
+    Material Components for Android (com.google.android.material:material)
+    Licence: Apache License 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) The Android Open Source Project
+
+Exact versions are pinned in android/gradle/libs.versions.toml.
+
+--------------------------------------------------------------------------------
+Other dependencies
+--------------------------------------------------------------------------------
+The desktop client pulls in further open-source libraries through Cargo and npm, and the released
+installers are binaries that contain them. They are overwhelmingly MIT/Apache-2.0; the authoritative
+list for a given build is its lockfile (tauri/src-tauri/Cargo.lock, tauri/package-lock.json), and
+`cargo license` over that lockfile reproduces the licence set exactly. If you redistribute the
+installers, carry that generated list with them.
+
+Notable runtime components that are NOT bundled and must be installed separately by the user:
+VB-CABLE (Windows) and BlackHole (macOS) as virtual microphones; on Linux the virtual microphone
+is created at runtime through PulseAudio/PipeWire, which the client drives via `pactl`.

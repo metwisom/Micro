@@ -22,7 +22,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: SettingsActivityBinding
     private var ready = false
-    private var inputDeviceIds: List<Int> = listOf(AppSettings.DEVICE_AUTO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +33,8 @@ class SettingsActivity : AppCompatActivity() {
         setupLanguageSpinner()
         setupSourceSpinner()
         setupInputDeviceSpinner()
+        setupFecSwitch()
+        setupLowLatencySwitch()
         ready = true
     }
 
@@ -94,19 +95,42 @@ class SettingsActivity : AppCompatActivity() {
             labels += "${d.productName} · ${deviceTypeName(d.type)}"
             ids += d.id
         }
-        inputDeviceIds = ids
+        // Capture the fully-built id list as an immutable snapshot the listener closes over, so a
+        // spinner callback can never read a half-populated/replaced field (the previous mutable field
+        // was written here and read in the callback — a latent ordering hazard).
+        val deviceIds = ids.toList()
         binding.inputDevice.adapter = ArrayAdapter(
             this, android.R.layout.simple_spinner_dropdown_item, labels
         )
-        binding.inputDevice.setSelection(ids.indexOf(AppSettings.inputDeviceId(this)).coerceAtLeast(0), false)
+        binding.inputDevice.setSelection(deviceIds.indexOf(AppSettings.inputDeviceId(this)).coerceAtLeast(0), false)
         binding.inputDevice.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
-                val value = inputDeviceIds[pos]
+                val value = deviceIds[pos]
                 if (!ready || value == AppSettings.inputDeviceId(this@SettingsActivity)) return
                 AppSettings.setInputDeviceId(this@SettingsActivity, value)
                 restartIfRunning()
             }
             override fun onNothingSelected(p: AdapterView<*>?) {}
+        }
+    }
+
+    private fun setupFecSwitch() {
+        binding.fec.isChecked = AppSettings.fecEnabled(this)
+        binding.fec.setOnCheckedChangeListener { _, checked ->
+            if (!ready || checked == AppSettings.fecEnabled(this)) return@setOnCheckedChangeListener
+            AppSettings.setFecEnabled(this, checked)
+            restartIfRunning()
+        }
+    }
+
+    private fun setupLowLatencySwitch() {
+        binding.lowLatency.isChecked = AppSettings.lowLatency(this)
+        binding.fec.isEnabled = !AppSettings.lowLatency(this) // FEC is unavailable in CELT-only mode
+        binding.lowLatency.setOnCheckedChangeListener { _, checked ->
+            if (!ready || checked == AppSettings.lowLatency(this)) return@setOnCheckedChangeListener
+            AppSettings.setLowLatency(this, checked)
+            binding.fec.isEnabled = !checked
+            restartIfRunning()
         }
     }
 
@@ -140,8 +164,15 @@ class SettingsActivity : AppCompatActivity() {
             ).apply {
                 text = getString(R.string.delete)
                 setOnClickListener {
-                    AuthStore.removeApproved(this@SettingsActivity, dev.uuid)
-                    renderTrusted()
+                    com.google.android.material.dialog.MaterialAlertDialogBuilder(this@SettingsActivity)
+                        .setTitle(R.string.delete_device_title)
+                        .setMessage(getString(R.string.delete_device_msg, dev.name))
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.delete) { _, _ ->
+                            MicService.forgetDevice(this@SettingsActivity, dev.uuid)
+                            renderTrusted()
+                        }
+                        .show()
                 }
             }
             row.addView(name)

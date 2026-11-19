@@ -2,3 +2,9 @@ node_modules/
 dist/
 src-tauri/target/
 src-tauri/gen/
+
+# Mobile icon sets that `npm run tauri icon` also emits. Micro is a desktop-only Tauri app
+# (bundle targets: nsis/deb/appimage/dmg), and the Android app is a separate native project,
+# so these 35 files are build output nothing reads.
+src-tauri/icons/ios/
+src-tauri/icons/android/

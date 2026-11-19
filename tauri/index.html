@@ -11,16 +11,18 @@
       <div class="field">
         <span data-i18n="source_label">Phone source</span>
         <div id="sources" class="sources"></div>
-        <div id="vu" class="vu hidden"><div id="vubar"></div></div>
+        <div id="status" class="status-line" role="status" aria-live="polite"></div>
+        <div id="vu" class="vu hidden" aria-hidden="true"><div id="vubar"></div></div>
         <div id="codePrompt" class="code-prompt hidden">
-          <span data-i18n="enter_code">Enter the code shown on the phone</span>
+          <label for="code" data-i18n="enter_code">Enter the code shown on the phone</label>
+          <div id="fpRow" class="fp hidden"><span data-i18n="device_fp">Device fingerprint</span>: <b id="fpName"></b></div>
           <div class="manual">
             <input id="code" type="text" inputmode="numeric" maxlength="4" placeholder="1234" autocomplete="off" />
             <button id="codeOk" class="primary small" data-i18n="ok">OK</button>
           </div>
         </div>
         <div id="manual" class="manual hidden">
-          <input id="host" type="text" placeholder="192.168.1.139" autocomplete="off" />
+          <input id="host" type="text" placeholder="192.168.1.139" autocomplete="off" data-i18n-aria="host_label" aria-label="Phone IP address" />
           <button id="manualConnect" class="primary small" data-i18n="connect">Connect</button>
         </div>
       </div>
@@ -44,7 +46,7 @@
           <span data-i18n="output">Audio output (device)</span>
           <div class="row">
             <select id="device"></select>
-            <button id="refresh" class="ghost" data-i18n-title="refresh" title="Refresh list">⟳</button>
+            <button id="refresh" class="ghost" data-i18n-title="refresh" data-i18n-aria="refresh" title="Refresh list" aria-label="Refresh list">⟳</button>
           </div>
         </label>
       </section>
@@ -59,7 +61,7 @@
             <small data-i18n="volume_hint">(signal boost)</small></span>
           <input id="gain" type="range" min="0" max="4" step="0.1" value="1.5" />
         </label>
-        <label class="field">
+        <label class="field" id="vadRow">
           <span><span data-i18n="vad">VAD gate</span>: <b id="vadval">0.00</b>
             <small data-i18n="vad_hint">(0 = off, 0.6–0.9 = hard)</small></span>
           <input id="vad" type="range" min="0" max="1" step="0.05" value="0" />
@@ -67,6 +69,12 @@
         <label class="field narrow">
           <span data-i18n="buffer">Buffer (10 ms frames, lower = less ping)</span>
           <input id="buffer" type="number" value="3" min="1" max="40" />
+          <small id="bufferHint" class="hint wide-hint" role="status" aria-live="polite" hidden></small>
+        </label>
+        <label class="field">
+          <span data-i18n="hotkey">Mute hotkey</span>
+          <input id="hotkey" type="text" value="CmdOrControl+Shift+M" autocomplete="off" spellcheck="false" />
+          <small id="hotkeyMsg" class="hint" aria-live="polite"></small>
         </label>
         <label class="check">
           <input id="autostart" type="checkbox" />

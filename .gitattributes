@@ -1,0 +1,34 @@
+# Line endings are decided here, not by each contributor's git config.
+#
+# Without this file the committed bytes depend on `core.autocrlf`, which the Git for Windows
+# installer defaults to `true`. A contributor with that default would commit CRLF into the shell
+# scripts and `android/gradlew`, and they would then die on Linux with:
+#
+#     bash: line 1: $'\r': command not found
+#
+# `.editorconfig` cannot prevent this: it is an editor convention and has no effect on what git
+# writes into the object database.
+* text=auto eol=lf
+
+# Windows-only entry points genuinely want CRLF.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Never normalise binaries.
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.icns  binary
+*.jar   binary
+*.apk   binary
+*.aab   binary
+*.keystore binary
+*.jks   binary
+
+# Generated / vendored: collapsed by default in review and excluded from language statistics.
+# Deliberately NOT `-diff`: a dependency bump is exactly the change a reviewer must be able to read,
+# and `linguist-generated` already hides the noise unless someone asks to see it.
+tauri/package-lock.json      linguist-generated
+tauri/src-tauri/Cargo.lock   linguist-generated
+tauri/src-tauri/rnnoise/**   linguist-vendored

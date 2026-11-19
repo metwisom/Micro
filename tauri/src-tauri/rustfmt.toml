@@ -1,0 +1,11 @@
+# Without a config, `cargo fmt` rewrites this tree to rustfmt's 100-column default and collapses the
+# hand-laid-out struct literals — so every contributor with format-on-save (the rust-analyzer default
+# in VS Code) would open a pull request whose diff touches lines they never edited.
+#
+# These two settings describe the style the code is already written in, so `cargo fmt` becomes a
+# no-op on a clean tree and a real review tool on a dirty one.
+max_width = 110
+
+# Keep short struct literals, calls and arrays on one line up to `max_width` instead of exploding
+# them across five lines each — the codebase reads that way throughout (see `JitterBuffer::new`).
+use_small_heuristics = "Max"

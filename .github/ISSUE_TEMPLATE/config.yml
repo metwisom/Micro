@@ -1,0 +1,15 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or setup help — the docs answer most of these
+    url: https://github.com/metwisom/Micro/blob/master/README.md#quick-start
+    about: >-
+      "How do I get the virtual mic working", "is this supposed to sound like
+      that" — the Quick start in README.md and the per-platform notes in
+      BUILD.md cover most of it. If they do not, open a blank issue. The forms
+      below are for reproducible bugs and concrete, scoped feature requests.
+  - name: Report a security vulnerability privately
+    url: https://github.com/metwisom/Micro/security/policy
+    about: >-
+      Never open a public issue for a flaw in pairing, key handling, session
+      setup or the wire protocol. Follow the security policy and report it
+      privately instead.

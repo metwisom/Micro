@@ -1,0 +1,158 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# A new push to the same branch/PR makes the in-flight run pointless: cancel it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Desktop client, Rust side (tauri/src-tauri): format, lint, unit tests.
+  # ---------------------------------------------------------------------------
+  desktop-rust:
+    name: Desktop client (Rust)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Linux system dependencies
+        # The crate depends on tauri, which links GTK/WebKit, so even `cargo test --lib`
+        # needs the full desktop toolchain. webkit2gtk 4.1 is the Tauri v2 series (4.0 is v1).
+        # libopus-dev lets audiopus_sys find libopus via pkg-config instead of falling back
+        # to an autotools build of the bundled copy.
+        # scripts/build-linux.sh also installs libfuse2; that one is only needed to run the
+        # AppImage bundler, which this job does not do — and Ubuntu 24.04 (ubuntu-latest)
+        # renamed it to libfuse2t64, so asking for it here would abort the whole apt run.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential curl wget file pkg-config libopus-dev \
+            autoconf automake libtool libssl-dev \
+            libgtk-3-dev libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev \
+            libsoup-3.0-dev libayatana-appindicator3-dev librsvg2-dev \
+            libxdo-dev libasound2-dev
+        env:
+          DEBIAN_FRONTEND: noninteractive
+
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          # rustfmt as well as clippy: the Formatting step below runs `cargo fmt --check`,
+          # and this action installs the minimal profile plus exactly what is listed here.
+          components: clippy, rustfmt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tauri/package-lock.json
+
+      - name: Build the frontend
+        # tauri-build embeds tauri/dist (frontendDist in tauri.conf.json) at compile time,
+        # so the Vite output has to exist before the Rust crate will compile at all.
+        working-directory: tauri
+        run: |
+          npm ci
+          npm run build
+
+      - name: Cache cargo registry and build directory
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tauri/src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('tauri/src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Formatting
+        # The tree is rustfmt-clean under tauri/src-tauri/rustfmt.toml, which pins the style the
+        # code was already written in. Gating on it keeps it that way: without the gate the next
+        # hand-formatted pull request silently undoes the pass.
+        working-directory: tauri/src-tauri
+        run: cargo fmt --check
+
+      - name: Clippy
+        working-directory: tauri/src-tauri
+        run: cargo clippy -- -D warnings
+
+      - name: Unit tests
+        working-directory: tauri/src-tauri
+        run: cargo test --lib
+
+  # ---------------------------------------------------------------------------
+  # Desktop client, frontend side (tauri/src): node:test unit tests + Vite build.
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: Desktop client (frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Vite 6 only needs Node 18+, but `npm test` is `node --test "tests/**/*.test.mjs"`,
+          # and the test runner expands glob patterns itself from Node 22 on (Node 20 would
+          # treat the pattern as a literal path and find no tests).
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tauri/package-lock.json
+
+      - name: Install dependencies
+        working-directory: tauri
+        run: npm ci
+
+      - name: Unit tests
+        # node --test against state.js; the pure logic needs no DOM.
+        working-directory: tauri
+        run: npm test
+
+      - name: Build
+        working-directory: tauri
+        run: npm run build
+
+  # ---------------------------------------------------------------------------
+  # Android server: JVM unit tests only.
+  # ---------------------------------------------------------------------------
+  android:
+    name: Android (unit tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Make gradlew executable
+        # Belt and braces. The exec bit *is* tracked (git ls-tree shows 100755), but it is easy to
+        # lose again: any `git reset` of a staged `--chmod=+x` drops it, and Windows checkouts
+        # cannot show that it went missing. One line here means that mistake breaks nothing.
+        run: chmod +x android/gradlew
+
+      - name: Unit tests
+        # No NDK/CMake setup here on purpose: testDebugUnitTest only runs compileDebugKotlin
+        # plus the test task, so it never triggers the native Opus build. A full
+        # assembleRelease would need the NDK, CMake and the pinned Opus download.
+        working-directory: android
+        run: ./gradlew testDebugUnitTest
+
+      - name: Upload test results
+        # Keeps a red build debuggable: the JUnit XML says which case failed and why.
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-results
+          path: android/app/build/test-results/testDebugUnitTest/*.xml
+          if-no-files-found: ignore

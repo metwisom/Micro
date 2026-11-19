@@ -10,13 +10,13 @@
 
   --text: #ffffff;
   --text-2: rgba(255, 255, 255, 0.61);
-  --text-3: rgba(255, 255, 255, 0.40);
+  --text-3: rgba(255, 255, 255, 0.50);
 
-  --layer-strong: rgba(255, 255, 255, 0.07);
   --control: rgba(255, 255, 255, 0.06);
   --control-hover: rgba(255, 255, 255, 0.09);
   --stroke: rgba(255, 255, 255, 0.09);
   --stroke-strong: rgba(255, 255, 255, 0.16);
+  --track: rgba(255, 255, 255, 0.22);   /* slider rail */
   --ok: #6ccb5a;
   --thumb-ring: #2b2e33;
   --field-bg: #2b2b2b;        /* opaque — for <select>/<option> popups */
@@ -37,13 +37,13 @@
 
     --text: #1b1b1b;
     --text-2: rgba(0, 0, 0, 0.62);
-    --text-3: rgba(0, 0, 0, 0.42);
+    --text-3: rgba(0, 0, 0, 0.55);
 
-    --layer-strong: rgba(0, 0, 0, 0.05);
     --control: rgba(0, 0, 0, 0.035);
     --control-hover: rgba(0, 0, 0, 0.06);
     --stroke: rgba(0, 0, 0, 0.10);
     --stroke-strong: rgba(0, 0, 0, 0.20);
+    --track: rgba(0, 0, 0, 0.22);
     --ok: #0f7b0f;
     --thumb-ring: #f3f3f3;
     --field-bg: #ffffff;
@@ -117,13 +117,20 @@ body {
   transition: transform 0.15s;
 }
 .settings[open] > summary::before { transform: rotate(90deg); }
-.settings > summary:hover { color: var(--accent); }
+.settings > summary:hover { color: var(--accent-on-bg, var(--accent)); }
 .settings > .card:first-of-type { border-top: 1px solid var(--stroke); }
 
 .field { display: flex; flex-direction: column; gap: 8px; flex: 1 1 100%; min-width: 0; }
 .field.narrow { flex: 0 0 170px; }
+/* A hint under a narrow field would otherwise wrap inside 170px and resize the window; let it use
+   the row's full width instead. */
+.field.narrow:has(.wide-hint) { flex: 1 1 100%; }
+.wide-hint { display: block; }
 .field > span { font-size: 13px; color: var(--text-2); }
 .field small { color: var(--text-3); font-weight: 400; }
+.hint { font-size: 12px; color: var(--text-3); min-height: 1em; }
+.hint.ok { color: var(--ok); }
+.hint.err { color: var(--danger-hover); }
 
 /* Text inputs & selects (Fluent: subtle fill + bottom accent on focus) */
 input[type="text"], input[type="number"], select {
@@ -144,7 +151,7 @@ input[type="text"], input[type="number"], select {
 input::placeholder { color: var(--text-3); }
 input[type="text"]:hover, input[type="number"]:hover, select:hover { background: var(--control-hover); }
 input[type="text"]:focus, input[type="number"]:focus, select:focus {
-  border-bottom: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent-on-bg, var(--accent));
   padding-bottom: 7px;
 }
 
@@ -158,6 +165,10 @@ select option { background-color: var(--field-bg); color: var(--text); }
 
 /* Buttons */
 button { font-family: inherit; cursor: pointer; border: none; border-radius: 5px; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent-on-bg, var(--accent));
+  outline-offset: 2px;
+}
 
 button.ghost {
   width: 36px;
@@ -181,7 +192,7 @@ button.primary:hover { background: var(--accent-hover); }
 button.primary:active { background: var(--accent-press); }
 button.primary.small { padding: 9px 18px; font-size: 14px; }
 
-/* Fluent toggle switch (the denoise checkbox) */
+/* Fluent toggle switch (the denoise / autostart checkboxes) */
 .check { display: flex; align-items: center; gap: 12px; font-size: 14px; flex: 1 1 100%; }
 .check input[type="checkbox"] {
   appearance: none;
@@ -206,17 +217,18 @@ button.primary.small { padding: 9px 18px; font-size: 14px; }
   transform: translateY(-50%);
   transition: left 0.15s, background 0.15s;
 }
-.check input[type="checkbox"]:hover { background: rgba(255, 255, 255, 0.06); }
+.check input[type="checkbox"]:hover { background: var(--control-hover); }
 .check input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
 .check input[type="checkbox"]:checked::before { left: 23px; background: var(--accent-fg); }
 
-/* Fluent sliders */
+/* Fluent sliders (the rail uses a theme token so it stays visible in light mode) */
 input[type="range"] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--track);
   outline: none;
 }
 input[type="range"]::-webkit-slider-thumb {
@@ -229,6 +241,8 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 input[type="range"]:hover::-webkit-slider-thumb { background: var(--accent-hover); }
+input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--accent); }
+input[type="range"]:disabled { opacity: 0.5; }
 
 /* Source list */
 .sources { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
@@ -259,7 +273,7 @@ input[type="range"]:hover::-webkit-slider-thumb { background: var(--accent-hover
   justify-content: space-between;
   cursor: default;
   background: transparent;
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--accent-on-bg, var(--accent));
   border-radius: 0;
   padding-left: 12px;
 }
@@ -273,14 +287,19 @@ input[type="range"]:hover::-webkit-slider-thumb { background: var(--accent-hover
 .btn-status.ok { color: var(--ok); }
 .btn-status.err { color: var(--danger-hover); }
 
+/* Status shown on its own line (a live region) when there is no active device row. It must stay in
+   the accessibility tree while empty (a live region that appears together with its first message is
+   not reliably announced), so it only loses its padding, never its display. */
+.status-line { color: var(--text-2); font-size: 12px; padding: 6px 2px 0; }
+.status-line:empty { padding: 0; }
+.status-line.err { color: var(--danger-hover); }
+.fp { font-size: 12px; color: var(--text-3); }
+
 .stop-btn {
   background: var(--danger);
   color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 9px 18px;
-  font-size: 14px;
-  font-weight: 600;
   flex: 0 0 auto;
   transition: background 0.1s;
 }
@@ -313,10 +332,22 @@ footer {
   margin-top: 6px;
 }
 
-/* VU meter + mute button (Tauri client) */
+/* VU meter + mute button */
 .vu { height: 6px; background: var(--control); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-.vu.hidden { display: none; }
 #vubar { height: 100%; width: 0%; background: var(--accent); transition: width 0.05s linear; }
+
+/* The phone name comes from an unauthenticated discovery reply: keep a long one inside its row
+   instead of letting it displace the mute/monitor/disconnect buttons (the window is fixed-width
+   and not resizable). min-width:0 is what actually lets a flex child shrink below its content. */
+.source-btn b, .src-info b { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Live telemetry, deliberately outside the aria-live status (see setStatus in main.js). */
+/* Telemetry: its own line under the status. The height is fixed rather than a minimum, because
+   the window is sized to its content: with a minimum, an empty line still measured ~3px shorter
+   than a filled one and the whole window twitched on every mute. */
+/* No opacity: at 0.85 over the row background this fell under 4.5:1 in the light scheme. The
+   secondary text colour is already the muted one. */
+.btn-stats { flex-basis: 100%; height: 16px; line-height: 16px; color: var(--text-2); }
 
 .active-btns { display: flex; gap: 8px; flex: 0 0 auto; }
 .mute-btn {
@@ -324,10 +355,6 @@ footer {
   color: var(--text);
   border: 1px solid var(--stroke);
   border-radius: 5px;
-  padding: 9px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
 }
 .mute-btn:hover { background: var(--control-hover); }
 .mute-btn.on { background: var(--accent); color: var(--accent-fg); border-color: transparent; }
@@ -346,8 +373,8 @@ footer {
   cursor: pointer;
 }
 .icon-btn svg { display: block; }
-.stop-btn.icon-btn { border-radius: 5px; }
 
 .code-prompt { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-.code-prompt > span { font-size: 13px; color: var(--text-2); }
+.code-prompt > label { font-size: 13px; color: var(--text-2); }
 #code { letter-spacing: 4px; text-align: center; font-size: 18px; }
+
