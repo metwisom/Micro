@@ -64,7 +64,7 @@ jobs:
           npm run build
 
       - name: Cache cargo registry and build directory
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
