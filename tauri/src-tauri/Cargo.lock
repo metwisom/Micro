@@ -2534,7 +2534,7 @@ dependencies = [
  "keyring",
  "log",
  "mimalloc",
- "png 0.17.16",
+ "png 0.18.1",
  "ringbuf",
  "serde",
  "sha2",
