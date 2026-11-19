@@ -49,7 +49,7 @@ jobs:
           # and this action installs the minimal profile plus exactly what is listed here.
           components: clippy, rustfmt
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # Vite 6 only needs Node 18+, but `npm test` is `node --test "tests/**/*.test.mjs"`,
           # and the test runner expands glob patterns itself from Node 22 on (Node 20 would
