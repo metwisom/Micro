@@ -2528,7 +2528,7 @@ dependencies = [
  "cpal",
  "dirs 6.0.0",
  "gethostname",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "hkdf",
  "if-addrs",
  "keyring",
