@@ -32,7 +32,7 @@ socket2 = "0.6"
 # Machine name for the phone's device list; works in GUI sessions where $HOSTNAME is not exported.
 gethostname = "1"
 x25519-dalek = { version = "2", features = ["static_secrets"] }
-chacha20poly1305 = "0.10"
+chacha20poly1305 = "0.11"
 hkdf = "0.12"
 sha2 = "0.10"
 base64 = "0.22"
