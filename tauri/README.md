@@ -57,7 +57,8 @@ separate native project.
   `%APPDATA%\Micro\client-id`; server pins under `%APPDATA%\Micro\pins\`. UI settings live in the
   webview's localStorage.
 - Window closes to the **tray** (localized Show / Disconnect / Quit, with a status line and a
-  colored status dot). Fixed width 500; height follows content. System accent is applied on Windows.
+  colored status dot). Fixed width 500; height follows content and can be resized up to the current
+  monitor's work area, with scrolling when content does not fit.
 
 ## Protocol
 Same wire format as the server — see the root [`PROTOCOL.md`](../PROTOCOL.md).

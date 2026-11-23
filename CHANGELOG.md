@@ -11,6 +11,9 @@ A hardening pass over the whole project: several ways to get microphone access w
 owner's consent are closed, two nonce-reuse paths are removed, and the client now recovers from
 network changes on its own.
 
+- The desktop window can be resized vertically and stays within the monitor's work area; settings
+  scroll when they do not fit.
+
 > **Upgrade note — the wire protocol changed.** Pairing, the key exchange reply and the audio framing
 > all moved, so a phone and a desktop running different versions cannot connect at all — not even a
 > pair they had already established. Update both ends together. **Existing pairings keep working:** the

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { getCurrentWindow, availableMonitors, LogicalSize, PhysicalPosition } from "@tauri-apps/api/window";
+import { getCurrentWindow, availableMonitors, currentMonitor, PhysicalSize, PhysicalPosition } from "@tauri-apps/api/window";
 import { enable as autoEnable, disable as autoDisable, isEnabled as autoIsEnabled } from "@tauri-apps/plugin-autostart";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import { register as registerShortcut, unregister as unregisterShortcut } from "@tauri-apps/plugin-global-shortcut";
@@ -672,20 +672,37 @@ async function applyHotkey(value) {
 const WIN_POS_KEY = "winPosPhys";
 const MIN_WINDOW_HEIGHT = 200;
 
-// The content drives the window height. Never ask for 0: a hidden/not-yet-laid-out .app reports
-// offsetHeight 0, and a zero-height window is invisible with no way back.
-function syncHeight() {
-  const app = document.querySelector(".app");
-  if (!app) return;
-  const measured = Math.ceil(app.offsetHeight);
-  if (measured <= 0) return; // not laid out (or hidden) — keep whatever size we have
-  // Clamp to the screen's work area, not a hard-coded ceiling: the window is not resizable, so a
-  // window taller than the display leaves its bottom (and the settings inside it) unreachable with
-  // no way back. availHeight already excludes the taskbar/dock and is in CSS pixels, like LogicalSize.
-  const avail = Math.round(window.screen && window.screen.availHeight) || 0;
-  const ceiling = avail > MIN_WINDOW_HEIGHT + 80 ? avail - 60 : 1000;
-  const h = Math.min(ceiling, Math.max(MIN_WINDOW_HEIGHT, measured));
-  getCurrentWindow().setSize(new LogicalSize(500, h)).catch((e) => console.warn("setSize", e));
+// Keep the outer window within the current monitor's work area, including its title bar.
+async function windowBounds() {
+  const win = getCurrentWindow();
+  const monitor = await currentMonitor();
+  if (!monitor) return null;
+  const [inner, outer] = await Promise.all([win.innerSize(), win.outerSize()]);
+  const frame = Math.max(0, outer.height - inner.height);
+  const maxHeight = Math.max(1, monitor.workArea.size.height - frame);
+  await win.setMaxSize(new PhysicalSize(Math.round(500 * monitor.scaleFactor), maxHeight));
+  return { monitor, frame, maxHeight };
+}
+
+// Content changes resize the window; manual resizing remains possible between content changes.
+async function syncHeight() {
+  const measured = Math.ceil(document.querySelector(".app")?.offsetHeight || 0);
+  if (!measured) return;
+  try {
+    const win = getCurrentWindow();
+    const bounds = await windowBounds();
+    if (!bounds) return;
+    const { monitor, frame, maxHeight } = bounds;
+    const height = Math.min(maxHeight, Math.max(MIN_WINDOW_HEIGHT * monitor.scaleFactor, measured * monitor.scaleFactor));
+    const pos = await win.outerPosition();
+    const top = monitor.workArea.position.y;
+    const bottom = top + monitor.workArea.size.height;
+    const y = Math.max(top, Math.min(pos.y, bottom - height - frame));
+    if (y !== pos.y) await win.setPosition(new PhysicalPosition(pos.x, Math.round(y)));
+    await win.setSize(new PhysicalSize(Math.round(500 * monitor.scaleFactor), Math.round(height)));
+  } catch (e) {
+    console.warn("window geometry", e);
+  }
 }
 
 async function restorePosition() {
@@ -873,6 +890,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     posTimer = setTimeout(async () => {
       try {
         if (await win.isMinimized()) return;
+        await windowBounds();
         const pos = { x: payload.x, y: payload.y };
         if (!isOnScreen(pos, await availableMonitors())) return;
         store.set(WIN_POS_KEY, JSON.stringify(pos));
