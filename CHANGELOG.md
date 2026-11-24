@@ -13,6 +13,7 @@ network changes on its own.
 
 - The desktop window can be resized vertically and stays within the monitor's work area; settings
   scroll when they do not fit.
+- On Wayland, the desktop window uses the compositor's title bar and the Micro application icon.
 
 > **Upgrade note — the wire protocol changed.** Pairing, the key exchange reply and the audio framing
 > all moved, so a phone and a desktop running different versions cannot connect at all — not even a
