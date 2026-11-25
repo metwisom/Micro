@@ -34,6 +34,7 @@ mod discovery;
 mod events;
 mod jitter;
 mod link;
+mod memory_profile;
 mod net;
 mod platform;
 mod proto;
@@ -115,6 +116,7 @@ pub fn run() {
             commands::start_discovery,
             commands::connect,
             commands::disconnect,
+            memory_profile::memory_profile,
             commands::reset,
             tray::update_tray,
             tray::set_tray_icon,

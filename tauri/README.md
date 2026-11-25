@@ -60,5 +60,15 @@ separate native project.
   colored status dot). Fixed width 500; height follows content and can be resized up to the current
   monitor's work area, with scrolling when content does not fit.
 
+## Linux memory diagnostics
+
+Quit Micro completely via the tray, then start it with `MICRO_MEMORY_PROFILE=1 micro-client`.
+Every 30 seconds the app records its and its WebKit child processes' RSS, PSS, anonymous memory
+and swap, plus UI event/layout counters and DOM node count. Logs are private to the user, in
+`~/.cache/Micro/memory-<pid>-<start-time>.log` (or `$XDG_CACHE_HOME/Micro`), and capped at 2 MiB
+per run. Stop and restart to begin another log; delete old logs when no longer needed. No audio,
+IP addresses, device names, or credentials are recorded. This tracks memory growth and activity,
+not allocation call stacks or JavaScript heap contents.
+
 ## Protocol
 Same wire format as the server — see the root [`PROTOCOL.md`](../PROTOCOL.md).

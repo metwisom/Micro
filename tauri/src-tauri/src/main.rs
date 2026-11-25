@@ -8,8 +8,8 @@ extern "C" {
 }
 
 fn main() {
-    // Wayland matches the app ID to the bundled Micro.desktop and its icon.
+    // Wayland matches the app ID to the bundled Micro-Mic.desktop and its icon.
     #[cfg(target_os = "linux")]
-    unsafe { g_set_prgname(c"Micro".as_ptr()) };
+    unsafe { g_set_prgname(c"Micro-Mic".as_ptr()) };
     micro_client_lib::run()
 }

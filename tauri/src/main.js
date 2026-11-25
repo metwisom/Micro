@@ -163,6 +163,7 @@ let trayState = "";
 let notifyOk = false;
 let hotkey = "";            // currently registered global shortcut ("" = none)
 let sourcesSig = "";        // last rendered source-list signature (skip identical re-renders)
+const profileCounts = { vuEvents: 0, statsEvents: 0, layoutEvents: 0 };
 const phones = new Map();   // id(phone) || ip -> { ip, port, name, id, seen }
 const ipSeen = new Map();   // ip -> last discovery reply from that address
 
@@ -794,6 +795,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // set before the connect() invoke, so nothing that happens during the invoke is dropped either.
   await Promise.all([
     listen("vu", (e) => {
+      profileCounts.vuEvents++;
       if (!running) return;
       if (e.payload.active) lastPcm = Date.now();
       // sqrt curve: full scale at peak=1 (no early clip), quiet signals stay visible.
@@ -802,6 +804,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }),
     listen("audio-output", (e) => { audioOutOk = !!e.payload; }),
     listen("stats", (e) => {
+      profileCounts.statsEvents++;
       lastStats = { kbps: e.payload.kbps, loss: (e.payload.loss * 100).toFixed(1), ping: e.payload.ping };
     }),
     listen("session", (e) => {
@@ -899,9 +902,17 @@ window.addEventListener("DOMContentLoaded", async () => {
   }).catch(() => {});
   // One-off cleanup of the pre-1.0 logical-pixel key (it could hold a minimized window's position).
   store.remove("winPos");
-  new ResizeObserver(() => syncHeight()).observe(document.querySelector(".app"));
+  new ResizeObserver(() => { profileCounts.layoutEvents++; syncHeight(); }).observe(document.querySelector(".app"));
   syncHeight();
   sweepTimer = setInterval(sweepPhones, 5000);
+  const profile = () => invoke("memory_profile", { sample: {
+    ...profileCounts, domNodes: document.querySelectorAll("*").length, hidden: document.hidden, running
+  } });
+  profile().then((enabled) => {
+    if (enabled) {
+      const timer = setInterval(() => profile().catch((e) => { clearInterval(timer); console.error("memory profile:", e); }), 30000);
+    }
+  }).catch((e) => console.error("memory profile:", e));
 
   // Non-critical extras last: they may pop OS dialogs and must not delay discovery.
   applyHotkey($("hotkey").value);
