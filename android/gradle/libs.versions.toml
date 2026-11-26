@@ -1,10 +1,10 @@
 [versions]
-agp = "9.0.1"
+agp = "9.5.3"
 coreKtx = "1.18.0"
 junit = "4.13.2"
-appcompat = "1.7.1"
-material = "1.13.0"
-bouncycastle = "1.80"
+appcompat = "1.8.0"
+material = "1.14.0"
+bouncycastle = "1.87"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
