@@ -37,7 +37,7 @@ hkdf = "0.12"
 sha2 = "0.10"
 base64 = "0.22"
 zeroize = "1"
-getrandom = "0.3"
+getrandom = "0.4"
 # OS secret store for the long-term identity: Windows Credential Manager, macOS Keychain,
 # Linux Secret Service. Falls back to an owner-only file when no store is available (see store.rs).
 keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
